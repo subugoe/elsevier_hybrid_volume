@@ -4,7 +4,7 @@ library(urltools)
 els_df <- readr::read_csv("data/elsevier_oa_info.csv")
 emails_df <- els_df %>%
   mutate(email = tolower(email)) %>%
-  filter(!is.na(email)) %>% 
+  #filter(!is.na(email)) %>% 
   mutate(domain = map_chr(email, function(x) str_split(x, "@") %>% 
                             unlist() %>% 
                             tail(1)))
