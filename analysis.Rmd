@@ -1,0 +1,41 @@
+---
+title: "Exploratory data analysis of hybrid open access articles from Elsevier"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Load data
+
+```{r}
+hybrid_df <- readr::read_csv("data/els_hybrid_info_normalized.csv")
+```
+
+## Sponsoring 
+
+Generally, Elsevier requires authors to pay an publication fee, also known as article processing charge (APC). Many authors make use of funding from grant agencies or academic institutions to cover these fees. To streamline this process, some funding bodies and institutions have agreed central payment options for affilated researcher. Elsevier also provides APC waivers.
+
+The variable `oa_sponsor_type` provides information about funding of hybrid open access articles.
+
+```{r}
+hybrid_df %>%
+  count(oa_sponsor_type) %>%
+  mutate(prop = n / sum(n) * 100)
+```
+
+In most cases, publication fees were paid directly `r round(hybrid_df %>% filter(oa_sponsor_type == "Author") %>% nrow() / nrow(hybrid_df) * 100, 2)` %. Elsevier lists an funding body covering the open access publication fee for around one third of articles. 
+
+In the following, 
+
+```{r}
+library(echarts4r)
+hybrid_df %>% 
+  replace_na(list(oa_sponsor_name = "unknown", oa_sponsor_type = "unknown")) %>%
+  count(oa_sponsor_name, oa_sponsor_type) %>%
+    e_charts() %>%
+    e_treemap(oa_sponsor_type, oa_sponsor_name, n, leafDepth = "1",
+              name = "Corresponding Email") %>%
+    e_tooltip(trigger = "item")
+```
