@@ -13,16 +13,17 @@ library(tidyverse)
 hybrid_df <- readr::read_csv("data/els_hybrid_info_normalized.csv")
 ```
 
-## Sponsoring 
+## Sponsorship 
 
-Generally, Elsevier requires authors to pay an publication fee, also known as article processing charge (APC). Many authors make use of funding from grant agencies or academic institutions to cover these fees. To streamline this process, some funding bodies and institutions have agreed central payment options for affilated researcher. Elsevier also provides APC waivers.
+Elsevier usually requires authors to pay an publication fee, also known as article processing charge (APC) to publish open access. Many authors make use of funding from grant agencies or academic institutions to cover such fees. To streamline this process, some funding bodies and institutions have agreed central payment options for affilated researcher. Elsevier also provides APC waivers.
 
 The variable `oa_sponsor_type` provides information about funding of hybrid open access articles.
 
 ```{r}
 hybrid_df %>%
   count(oa_sponsor_type) %>%
-  mutate(prop = n / sum(n) * 100)
+  mutate(prop = round(n / sum(n) * 100, 2)) %>%
+  arrange(desc(prop))
 ```
 
 In most cases, publication fees were paid directly `r round(hybrid_df %>% filter(oa_sponsor_type == "Author") %>% nrow() / nrow(hybrid_df) * 100, 2)` %. Elsevier lists an funding body covering the open access publication fee for around one third of articles. 
@@ -36,6 +37,108 @@ hybrid_df %>%
   count(oa_sponsor_name, oa_sponsor_type) %>%
     e_charts() %>%
     e_treemap(oa_sponsor_type, oa_sponsor_name, n, leafDepth = "1",
-              name = "Corresponding Email") %>%
+              name = "APC Source") %>%
     e_tooltip(trigger = "item")
+```
+
+### Author affiliation
+
+```{r}
+library(echarts4r)
+hybrid_df %>% 
+  mutate(domain = ifelse(!is.na(domain), paste(domain, suffix, sep ="."), NA)) %>%
+  replace_na(list(suffix = "unknown", domain = "unknown")) %>%
+  count(suffix, domain) %>%
+    e_charts() %>%
+    e_treemap(suffix, domain, n, leafDepth = "1",
+              name = "Email Domain") %>%
+    e_tooltip(trigger = "item")
+```
+
+### What is the uptake of hybrid open access among Elsevier journals?
+
+```{r}
+library(jsonlite)
+cr_facets <- jsonlite::stream_in(file("data/journal_facets.json"))
+all_per_year <- cr_facets %>%
+  unnest(year_published) %>%
+  rename(year = .id, article_volume = V1) %>%
+  filter(year > 2014)
+
+oa_per_year <- hybrid_df %>%
+  mutate(issued_year = as.character(issued_year)) %>%
+  group_by(issn, issued_year) %>%
+  summarise(n = n()) %>%
+  right_join(all_per_year, by = c("issn", "issued_year" = "year")) %>%
+  mutate(n = ifelse(is.na(n), 0, n)) %>%
+  mutate(oa_share = n / article_volume)
+```
+
+plot 
+
+```{r}
+oa_per_year %>%
+  filter(n != 0) %>%
+  ggplot(aes(issued_year, oa_share)) + 
+  geom_boxplot()
+perc_df <- oa_per_year %>%
+  filter(n != 0) %>%
+ group_by(issued_year) %>% 
+  summarize(median = median(oa_share),
+            p_10 = quantile(oa_share,0.1),
+            p_90 = quantile(oa_share,0.9)) %>%
+  ungroup()
+a_plot <- perc_df %>%
+  ggplot()+
+  geom_econodist(aes(x = issued_year, ymin = p_10, median = median, ymax = p_90),
+         stat = "identity", show.legend = TRUE) +
+  scale_y_continuous(position = "right", limits = range(0, 0.10),
+                    labels =  scales::percent) +  coord_flip() +
+  labs(
+    x = NULL, y = NULL,
+    title = "What is the uptake of hybrid open access among Elsevier journals?",
+    subtitle = "Proportion of immediate open access articles published in subscription-based journals\nJan 2015 to July 2019",
+    caption = "@najkoja Data source: Elsevier B.V. / Crossref"
+  ) +
+  theme_minimal(base_family = "Roboto") +
+  theme(panel.grid.minor = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  theme(panel.grid.major.y = element_blank()) +
+  theme(panel.border = element_blank())
+grid.newpage()
+left_align(a_plot, c("subtitle", "title", "caption")) %>% 
+  add_econodist_legend(econodist_legend_grob(family = "Roboto"), below = "subtitle") %>% 
+  grid.draw() 
+```
+
+#### Growth of hybrid open access from institutional aggreements with Elsevier
+
+```{r}
+sponsored_articles <- hybrid_df %>%
+  mutate(oa_sponsor_type = ifelse(is.na(oa_sponsor_type), "unknown", oa_sponsor_type)) %>%
+  mutate(fct_source = fct_lump(oa_sponsor_type, prop = 0.05)) %>%
+  count(issued_year, fct_source)
+all_articles <- hybrid_df %>%
+  group_by(issued_year) %>%
+  summarise(n = n())
+
+ggplot(sponsored_articles, aes(x = issued_year, y = n)) +
+  geom_bar(
+    data = all_articles,
+    aes(fill = "All hybrid open access articles"),
+    color = "transparent",
+    stat = "identity"
+  ) +
+  geom_bar(aes(fill = "by type of recipient"), color = "transparent", stat = "identity") +
+  facet_wrap( ~ fct_source, nrow = 1) +
+  scale_fill_manual(values = c("#b3b3b3a0", "#56B4E9"), name = "") +
+  labs(x = "Year", y = "Hybrid OA Articles (Total)", title = "Elsevier Hybrid Open Access: To whom did the publisher send the bill?",
+       caption = "@najkoja Data source: Elsevier B.V. / Crossref") +
+  scale_y_continuous(labels = scales::number_format(big.mark = " ")) +
+  theme_minimal(base_family="Roboto", base_size = 12) +
+  theme(panel.grid.minor=element_blank()) +
+  theme(axis.ticks=element_blank()) +
+  theme(panel.grid.major.x=element_blank()) +
+  theme(panel.border=element_blank()) +
+  theme(legend.position="top", legend.justification = "right")
 ```
