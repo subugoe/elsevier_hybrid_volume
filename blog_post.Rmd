@@ -1,7 +1,7 @@
 ---
 title: "Elsevier Hybrid Open Access Analysis"
 description: | 
-  Data about the hybrid open access uptake is critical. Although policy recommendations have addressed open and transparent  workflows in recent years, identifying hybrid open access articles and funding sources remains challenging. In this post, we show how to mine such data from Elsevier using openly available sources and R. Between 2015 and July 2019, Elsevier's subscription journals published 63,577 hybrid open access articles, representing 2.3% of the overall publication volume of these journals.</br> A data analysis reveals a growing uptake of agreements between Elsevier and funders to cover costs for open access. Not surprisingly, mostly British and Dutch funders sponsor hybrid open access. But also the German Federal Ministry of Education and Research is well represented despite the current Elsevier boycott from most universities and research organizations in Germany. Nevertheless, the majority of funding sources is still unknown, raising important questions about the transparency of this publishing model.
+  Data about the hybrid open access uptake is critical. Although policy recommendations have addressed open and transparent  workflows in recent years, identifying hybrid open access articles and funding sources remains challenging. In this post, we show how to mine such data from Elsevier. Between 2015 and July 2019, Elsevier's subscription journals published 63,577 hybrid open access articles, representing 2.3% of the overall publication volume of these journals. A data analysis reveals a growing uptake of agreements between Elsevier and funders to cover costs for open access. Not surprisingly, mostly British and Dutch funders sponsor hybrid open access. But also the German Federal Ministry of Education and Research is well represented despite the current Elsevier boycott from most universities and research organizations in Germany. Nevertheless, the majority of funding sources is still unknown, raising important questions about the transparency of this publishing model.
 date: Aug 29, 2019
 author:
   - name: Najko Jahn 
@@ -9,6 +9,7 @@ author:
     affiliation: State and University Library Göttingen
     affiliation_url: https://www.sub.uni-goettingen.de/
 output: distill::distill_article
+bibliography: literature.bib
 ---
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
@@ -32,25 +33,32 @@ knitr::knit_hooks$set(
 library(tidyverse)
 ```
 
-In September 2018, the cOAltion S, a group of international research funders including the European Commission, announced its widely discussed Plan S. According to its principles, publication fees that may arise when publishing open access should be covered by funders or research organizations. Although surveys suggest that most authors do not pay such fees out of their pockets, publishers rarely share such evidence. But also not all funding organizations and research institutions disclose open access sponsorship at the article-level.
+In September 2018, the [cOAltion S](https://www.coalition-s.org/), a group of international research funders including the European Commission, announced its widely discussed [Plan S](https://www.coalition-s.org/principles-and-implementation/). According to its principles, publication fees that may arise when publishing open access should be covered by funders or research organizations. Although surveys[@Solomon_2011; @soap] suggest that most authors do not pay such fees out of their pockets, publishers rarely share such evidence. But also not all funding organizations and research institutions disclose open access sponsorship at the article-level despite existing attempts to crowd-source such data[@Jahn_2016]. Prominent examples sharing details about publication fee spending openly are the British [Charity Open Access Fund
+](https://wellcome.ac.uk/funding/guidance/charity-open-access-fund) maintained by the Wellcome Trust or the [Open APC Initiative](https://github.com/OpenAPC/openapc-de).  
 
-In this blogpost, we present a dataset comprising spending information from Elsevier, a major global publisher, and contrast these figures with the overall publication volume of its subscription-based journals. The resulting dataset is openly available along with the source code.
+This blogpost presents a dataset comprising publicly available spending information from Elsevier, a major publisher. The dataset, which was retrieved from Crossref and open access full-texts, serves as critical input to ongoing discussions around transition subscription journals to open access. The methods used to obtain the data not only address key challenges discovering hybrid open access articles along with funding and affiliation information. Elsevier's effort to make such data openly available also provides a good practice example for the ongoing development of metadata standards and workflows recommendations that address transformative agreements between publishers and libraries, a discussion led by the [ESAC initiative](https://esac-initiative.org/about/transformative-agreements/). 
 
-## Data and methods
+As more specific examples, the dataset will be used to analyzed to present the growth hybrid open access among Elsevier journals, and to contrast these figures with the overall publication volume of its subscription-based journals. Drawing on Elsevier's funding information, it will be furthermore investigate if publication fees were billed to the authors, covered by a funder as part of an [agreement with Elsevier](https://www.elsevier.com/about/open-science/open-access/agreements), or waived. Moreover, text-mined author email domains will be presented as rough approximation of the affiliation of the first resp. corresponding author, an important data point for delineating open access funding.
 
-Methods follow the [Hybrid Open Access Journal Dashboard](https://subugoe.github.io/hybrid_oa_dashboard/about.html), an interactive analytical application from the SUB Göttingen. Instead of using spending data from the [Open APC Initiative](https://github.com/OpenAPC/openapc-de), the Elsevier publication fee price list shared as pdf document was used to obtain hybrid open access journals. The rOpenSci [tabulizer](https://github.com/ropensci/tabulizer) package allowed to extract the data from this file. 
+The resulting dataset is openly available on GitHub along with the source code.
+
+## Methods
+
+As a start, the Elsevier publication fee price list shared as pdf document was used. The rOpenSci [tabulizer](https://github.com/ropensci/tabulizer) package allowed to extract data about these journals from this file. 
+
+Methods follow the [Hybrid Open Access Journal Dashboard](https://subugoe.github.io/hybrid_oa_dashboard/about.html), an interactive analytical application from the SUB Göttingen to monitor the longitudinal development of this publishing model at a large-scale. Instead of using spending data from the [Open APC Initiative](https://github.com/OpenAPC/openapc-de), the Elsevier publication fee price list shared as pdf document was used to obtain hybrid open access journals. The rOpenSci [tabulizer](https://github.com/ropensci/tabulizer) package allowed to extract the data from this file. 
 
 <aside>
   See [fetch_apc_list.R](https://github.com/njahn82/elsevier_hybrid_volume/blob/master/R/fetch_apc_list.R) how to obtain price data 
 </aside>
 
-Next, Crossref REST API was queried to discover open access articles published in these journals, as well as to retrieve yearly article volumes for the period 2015 - 2019. Using the [rcrossref](https://docs.ropensci.org/rcrossref/) client, developed and maintained by the rOpenSci initiative, the first API call retrieved all license URLs available per journal. I also drew on facet field counts to obtain the yearly article volume per journal from Crossref. After matching license URLs indicating open access articles, a second API call checked licensing metadata per journal. Here, I excluded delayed open access articles by using the Crossref’s REST API filters `license.url` and  `license.delay`. For every immediate open access article, comprehensive Crossref metadata was obtained including links to full-texts available for text- and data-mining.
+Next, Crossref REST API was queried to discover open access articles published in these journals, as well as to retrieve yearly article volumes for the period 2015 - 2019. Methods follow the [Hybrid Open Access Journal Dashboard](https://subugoe.github.io/hybrid_oa_dashboard/about.html), an interactive analytical application from the SUB Göttingen. Using the [rcrossref](https://docs.ropensci.org/rcrossref/) client, developed and maintained by the rOpenSci initiative, the first API call retrieved all license URLs available per journal. I also drew on facet field counts to obtain the yearly article volume per journal from Crossref. After matching license URLs indicating open access articles, a second API call checked licensing metadata per journal. Here, using the Crossref’s REST API filters `license.url` and  `license.delay` allowed to exclude delayed open access articles. For every immediate open access article, comprehensive Crossref metadata was obtained including links to full-texts.
 
 <aside>
   See [fetch_cr_md.R](https://github.com/njahn82/elsevier_hybrid_volume/blob/master/R/fetch_cr_md.R) how Crossref was called with R 
 </aside>
 
-Elsevier provides full-texts in `html` and `xml` via the [Crossref Text and Data Mining Services (Crossref-TDM)](https://support.crossref.org/hc/en-us/articles/215750183-Crossref-Text-and-Data-Mining-Services). Interfac The `xml` representation not only contains the full-text, but also comprehensive metadata including information about open access sponsorship. 
+Elsevier provides access to full-texts as `html` and `xml` document via the [Crossref Text and Data Mining Services (Crossref-TDM)](https://support.crossref.org/hc/en-us/articles/215750183-Crossref-Text-and-Data-Mining-Services). Surprisingly, the `xml` representation not only contains the full-text, but also comprehensive metadata including information about open access sponsorship shown below. 
 
 ```xml
 <openaccess>1</openaccess>
@@ -68,20 +76,25 @@ Elsevier provides full-texts in `html` and `xml` via the [Crossref Text and Data
  
 *Snapshot of open access metadata in Elsevier XML full. <https://api.elsevier.com/content/article/pii/S1475158518302261>*
 
-After interfacing the Elsevier full-texts with the [crminer](https://docs.ropensci.org/crminer/) package, a client maintained by rOpenSci, open access information was extracted. 
+After interfacing the Elsevier full-texts with the [crminer](https://docs.ropensci.org/crminer/) package, a client maintained by rOpenSci, this open access information was extracted from the xml-based full-text. 
 
 <aside>
   See [R/tdm_oa_info.R](https://github.com/njahn82/elsevier_hybrid_volume/blob/master/R/tdm_oa_info.R)
 </aside>
 
-Furthermore the first author email address was parsed using pattern matching, assuming that email domains roughly indicate the affiliation of the first respective corresponding author at the time of publication, an important data point in open access analytics. Next, I split the email domains in its parts with [urltools](https://CRAN.R-project.org/package=urltools). To avoid misuse, particularly academic spamming, only email domains are publicly shared.
+Moreover, the first author email address was parsed using pattern matching, assuming that email domains roughly indicate the affiliation of the first respective corresponding author at the time of publication. Next, the email domains was split in its parts with [urltools](https://CRAN.R-project.org/package=urltools). 
 
 
 <aside>
   See [R/extract_email_domains.R](https://github.com/njahn82/elsevier_hybrid_volume/blob/master/R/extract_email_domains.R)
 </aside>
 
-The resulting dataset comprises the following variables:
+## Dataset characteristics and availability
+
+The resulting dataset comprises the following variables, and is openly shared via GitHub.
+
+
+First ten rows
 
 ```{r, layout="l-body-outset", echo = TRUE}
 library(rmarkdown)
@@ -89,16 +102,15 @@ hybrid_df <- readr::read_csv("data/els_hybrid_info_normalized.csv")
 paged_table(head(hybrid_df, 10))
 ```
 
-and is openly shared via GitHub.
+It must be noted, however, that open access information from Elsevier full-text was not documented at the time of writing this blogpost. 
 
 ## Results
 
 In total, the dataset comprises `r nrow(hybrid_df)` hybrid open access articles from `r hybrid_df %>% distinct(issn) %>% nrow()` hybrid open access journals published between January 2015 and July 2019. 
 
-
 ### What is the uptake of hybrid open access among Elsevier journals?
 
-Using this datasets, the share of hybrid open access articles per journal was calculated. To explore variations among journals,  [Bob Rudis](https://twitter.com/hrbrmstr) [ggeconodist package](https://cinc.rud.is/web/packages/ggeconodist/index.html) was used. The package does a great job replicating a boxplot aesthetics from the Economist magazine. 
+Using this datasets, the share of hybrid open access articles per journal was calculated. To explore variations among journals, [Bob Rudis](https://twitter.com/hrbrmstr) [ggeconodist package](https://cinc.rud.is/web/packages/ggeconodist/index.html) was used. The package does a great job replicating a boxplot aesthetics from The Economist magazine. 
 
 <!-- To start with, we load two data files: `els_hybrid_info_normalized.csv` contains funding information at the article-level, while `data/journal_facets.json` provides figures about the yearly publication volume for every hybrid open access journal.-->
 
@@ -228,5 +240,8 @@ hybrid_df %>%
 
 ## Discussion and conclusion
 
-
-
+<!-- open data sets and methods, helpful for research about the open acces but, but alos valuable for its implementation, for instance to prepar enoegoitons between publsihers and libraires
+- value of rich metadata provided by publisher to complement the existing evidence base, mostly driven funders and lirbaries
+- shows that it is not a technolgical problem, but many services as well as data analytics tools are already in place (crossref, tdm) 
+- more practical, although mostly paid to .., growing importance of aggrements making open access funding more transparent
+- however, mostly unknown-->
