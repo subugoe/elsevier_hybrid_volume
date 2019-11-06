@@ -1,7 +1,7 @@
 ---
 title: "Elsevier Hybrid Open Access Analysis"
 description: | 
-  Data about the hybrid open access uptake is critical. Although policy recommendations have addressed open and transparent  workflows in recent years, identifying hybrid open access articles and funding sources remains challenging. In this post, we show how to mine such data from Elsevier. Between 2015 and July 2019, Elsevier's subscription journals published 63,577 hybrid open access articles, representing 2.3% of the overall publication volume of these journals. A data analysis reveals a growing uptake of agreements between Elsevier and funders to cover costs for open access. Not surprisingly, mostly British and Dutch funders sponsor hybrid open access. But also the German Federal Ministry of Education and Research is well represented despite the current Elsevier boycott from most universities and research organizations in Germany. Nevertheless, the majority of funding sources is still unknown, raising important questions about the transparency of this publishing model.
+Publishers rarly share information to whom they sent the invoice for an article, or if a fee was waived. This post presents Elsevier as an remarkable exception that provides such information in an open and machine-readable way. Analysing 70,000 hybrid open access articles published in around 1,800 Elsevier journals between 2015 and now reveals a growth of centrally covered publication fees. Nevertheless, the majority of funding sources remains unknown, raising important questions about the transparency of fee-based open access publishing.
 date: Aug 29, 2019
 author:
   - name: Najko Jahn 
