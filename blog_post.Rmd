@@ -1,7 +1,7 @@
 ---
 title: "Elsevier Hybrid Open Access Analysis"
 description: | 
-Publishers rarly share information to whom they sent the invoice for an article, or if a fee was waived. This post presents Elsevier as an remarkable exception that provides such information in an open and machine-readable way. Analysing 70,000 hybrid open access articles published in around 1,800 Elsevier journals between 2015 and now reveals a growth of centrally covered publication fees. Nevertheless, the majority of funding sources remains unknown, raising important questions about the transparency of fee-based open access publishing.
+Publishers rarely share to whom they sent the invoice for an open access publication fee, or if the fee was waived. This blog post presents Elsevier as an remarkable exception that provides such information in an open and machine-readable way. Analysing 70,000 hybrid open access articles published in around 1,800 Elsevier journals between 2015 and now reveals a growth of centrally covered publication fees. Nevertheless, the majority of funding sources remains unknown, raising important questions about the transparency of fee-based open access publishing.
 date: Aug 29, 2019
 author:
   - name: Najko Jahn 
