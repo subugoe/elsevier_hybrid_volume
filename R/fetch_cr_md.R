@@ -6,7 +6,7 @@ require(jsonlite)
 #' load elsevier price list, only investigate hybrid journals
 els_jns_df <- readr::read_csv("data/elsevier_apc_list.csv") %>%
   filter(oa_type == "Hybrid")
-#' Call Crossref. First, the publication volume and the various license urls used
+#' Call Crossref. First, the publication volume and the various license urls will be fetched
 jn_facets <- purrr::map(els_jns_df$issn, .f = purrr::safely(function(x) {
   tt <- rcrossref::cr_works(
     filter = c(
@@ -35,7 +35,7 @@ jn_facets <- purrr::map(els_jns_df$issn, .f = purrr::safely(function(x) {
 jn_facets_df <- purrr::map_df(jn_facets, "result") 
 #' backup
 jsonlite::stream_out(jn_facets_df, file("data/journal_facets.json"))
-#' now add indication to the dataset
+#' now check for oa licenses
 hybrid_licenses <- jn_facets_df %>%
   select(journal_title, publisher, license_refs) %>%
   tidyr::unnest() %>%
@@ -79,14 +79,13 @@ cr_license <- purrr::map2(hybrid_licenses$license_ref, hybrid_licenses$issn,
                             )
                           }))
 #' into one data frame!
-#' dump it
 cr_license_df <- cr_license %>% 
   purrr::map_df("result") 
-#' all, results into a large file, which won't be tracked with GIT
+#' export results, large file, which won't be tracked with GIT
 dplyr::bind_rows(cr_license_df) %>% 
   jsonlite::stream_out(file("data/hybrid_license_md.json"))
-#' shorter dataset for text mining purposes
-tdm_df <- hybrid_cr_df %>% 
+#' lighter dataset for text mining purposes
+tdm_df <- cr_license_df %>% 
   unnest(md) %>% 
   select(link, doi, license, issn, container.title, issued) %>% 
   unnest() 

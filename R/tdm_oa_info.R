@@ -35,3 +35,16 @@ elsevier_oa_info <- purrr::map(elsevier_tdm$URL, .f = purrr::safely(elsevier_par
 elsevier_oa_info_df <- purrr::map_df(elsevier_oa_info, "result")
 #' backup
 write_csv(elsevier_oa_info_df, "data/elsevier_oa_info.csv")
+#' redo mining for updated dois
+elsevier_old <- read_csv("data/elsevier_oa_info.csv")
+hybrid_df <- readr::read_csv("data/elsevier_hybrid_oa_tdm_links.csv")  
+elsevier_tdm <- hybrid_df %>%
+  filter(content.type == "text/xml",
+         intended.application == "text-mining",
+         content.version == "vor") %>% 
+  filter(!URL %in% elsevier_old$tdm_url)
+elsevier_oa_update <- purrr::map(elsevier_tdm$URL, .f = purrr::safely(elsevier_parse))
+elsevier_oa_update_df <- purrr::map_df(elsevier_oa_update, "result")
+bind_rows(elsevier_old, elsevier_oa_update_df) %>% 
+  write_csv("data/elsevier_oa_info.csv")
+
