@@ -11,7 +11,7 @@ jn_facets <- purrr::map(els_jns_df$issn, .f = purrr::safely(function(x) {
   tt <- rcrossref::cr_works(
     filter = c(
       issn = x,
-      from_pub_date = "2013-01-01",
+      from_pub_date = "2015-01-01",
       until_pub_date = "2019-12-31",
       type = "journal-article"
     ),
@@ -41,7 +41,7 @@ hybrid_licenses <- jn_facets_df %>%
   tidyr::unnest() %>%
   mutate(license_ref = tolower(.id)) %>%
   select(-.id) %>%
-  mutate(hybrid_license = ifelse(grepl("creativecommons|open-access",
+  mutate(hybrid_license = ifelse(grepl("creativecommons",
     license_ref), TRUE, FALSE)) %>%
   filter(hybrid_license == TRUE) %>%
   left_join(jn_facets_df, by = c("journal_title" = "journal_title", "publisher" = "publisher"))
@@ -49,8 +49,8 @@ hybrid_licenses <- jn_facets_df %>%
 #' 2015:2019.
 #' Next, I want to validate that these 
 #' licenses were not issued for delayed open access articles by 
-#' additionally using  the self-explanatory filter `license.url` and
-#'  `license.delay`. I also obtain parsed metadata for these hybrid open
+#' additionally using  the self-explanatory filter `license.url` 
+#' I also obtain parsed metadata for these hybrid open
 #'  access articles stored as list-column. metadata fields we pare are 
 #'  defined in `cr_md_fields`
 cr_md_fields <- c("URL", "member", "created", "license", 
@@ -65,7 +65,6 @@ cr_license <- purrr::map2(hybrid_licenses$license_ref, hybrid_licenses$issn,
                             names(issn) <-rep("issn", length(issn))
                             tmp <- rcrossref::cr_works(filter = c(issn, 
                                                                   license.url = u, 
-                                                                  license.delay = 0,
                                                                   type = "journal-article",
                                                                   from_pub_date = "2015-01-01", 
                                                                   until_pub_date = "2019-12-31"),
@@ -89,4 +88,12 @@ tdm_df <- cr_license_df %>%
   unnest(md) %>% 
   select(link, doi, license, issn, container.title, issued) %>% 
   unnest() 
-write_csv(tdm_df, "data/elsevier_hybrid_oa_tdm_links.csv")
+#' get delayed oa  articles (<= 31 days)
+immediate_dois <- cr_license_df %>%
+  unnest(md) %>% 
+  select(doi, license1) %>% 
+  unnest() %>% 
+  filter(grepl("creativecommons", URL), delay.in.days <= 31)
+tdm_df %>%
+  filter(doi %in% immediate_dois$doi) %>%
+  write_csv("data/elsevier_hybrid_oa_tdm_links.csv")
