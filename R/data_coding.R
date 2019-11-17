@@ -17,5 +17,6 @@ hybrid_all %>%
          issn, journal_title, journal_volume = article_volume,
          tdm_link = URL, oa_sponsor_type, oa_sponsor_name, oa_archive,
          host, tld, suffix, domain, subdomain) %>% 
+  distinct(doi, .keep_all = TRUE) %>%
   write_csv("data/elsevier_hybrid_oa_df.csv")
 
