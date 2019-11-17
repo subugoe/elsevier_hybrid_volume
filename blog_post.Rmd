@@ -1,6 +1,6 @@
 ---
 title: "Elsevier Hybrid Open Access Analysis"
-description: Publishers rarely make spending for hybrid open access articles transparent. Elsevier is an remarkable exception, because the publisher provides open and machine-readable data about central agreements with funding bodies and fee waivers at the article level. This blogpost demonstrates how to mine these invoice data from Elsevier full-texts with R. Analysing the resulting dataset of  70,660 hybrid open access articles published in 1,753 journals between 2015 and now reveals that around one third of publication fees were paid through central agreements. Nevertheless, the majority of funding sources for hybrid open access articles remains unknown.
+description: Publishers rarely make spending for hybrid open access articles transparent. Elsevier is an remarkable exception, because the publisher provides open and machine-readable data about central agreements with funding bodies and fee waivers at the article level. This blogpost demonstrates how to mine these invoice data from Elsevier full-texts with R. Analysing the resulting dataset of  70,657 hybrid open access articles published in 1,753 journals between 2015 and now reveals that around one third of publication fees were paid through central agreements. Nevertheless, the majority of funding sources for hybrid open access articles remains unknown.
 date: Aug 29, 2019
 author:
   - name: Najko Jahn 
@@ -34,18 +34,20 @@ library(tidyverse)
 library(scales)
 ```
 
-In September 2018, the [cOAltion S](https://www.coalition-s.org/), a group of international research funders, announced its widely discussed [Plan S](https://www.coalition-s.org/principles-and-implementation/). According to its principles, funders or research organisations should cover open access publication, also known as article-processing charges (APC). In the case of hybrid open access, the funders intent to financially support this business model just through transformative agreements, which are central invoicing agreements aiming at the transition of subscription-based journal publishing to fully open access.
+## Introduction and background
 
-Although surveys[@Solomon_2011; @soap] suggest that already many authors do not pay publication fees themselves, keeping track of these funding streams is challenging, because publishers rarely share invoice data. But also not all funders and research organisations make open access payments available, and provide metadata about articles from central agreements to crowd-sourcing initiatives like [Open APC](https://github.com/OpenAPC/openapc-de). Altogether, this current lack of data limits the monitoring of funding streams for hybrid open access. <!--, despite existing attempts to crowd-source such data[@Jahn_2016]. Prominent examples sharing details about publication fee spending openly are the British [Charity Open Access Fund
-](https://wellcome.ac.uk/funding/guidance/charity-open-access-fund) maintained by the Wellcome Trust or the [Open APC Initiative](https://github.com/OpenAPC/openapc-de). --> 
+In September 2018, the [cOAltion S](https://www.coalition-s.org/), a group of international research funders, announced its widely discussed [Plan S](https://www.coalition-s.org/principles-and-implementation/). According to its principles, funders or research organisations should cover open access publication fees, also known as article-processing charges (APC). In the case of hybrid open access, the funders intent to financially support this business model through transformative agreements, which are central invoicing agreements aiming at the transition of subscription-based journal publishing to fully open access. The cOAltionS will monitor compliance with its open access funding policy.
 
-At the SUB Göttingen, the Scholarly Communication Analytics team will address this intransparent situation in a [new project](https://gepris.dfg.de/gepris/projekt/416115939) funded by the Deutsche Forschungsgemeinschaft (DFG) in its programme "Open Access Transition Agreements"[@holzer]. Building on our pilot, the interactive [Shiny](https://shiny.rstudio.com/) app [Hybrid OA Journal Monitor](https://subugoe.shinyapps.io/hybridoa/), this project will investigate data needs from German library consortia, and how they can be addressed by metadata requirements in transformative agreements. Case-studies and data products will be developed to monitor levels of compliance with policy recommendations. Here, invoice data are essential to make the various funding streams for hybrid open access articles visible. 
+Because of lacking data, the monitoring of spending for hybrid open access and transformative agreements is limited. Although surveys[@Solomon_2011; @soap] suggest that already many authors do not pay publication fees themselves, keeping track of these funding streams  is challenging, because publishers rarely share invoice data. But also not all funders and research organisations make per-article information about financially supported open access available, despite examples like the  British [Charity Open Access Fund
+](https://wellcome.ac.uk/funding/guidance/charity-open-access-fund) or the [Open APC Initiative](https://github.com/OpenAPC/openapc-de). 
 
-Against this background, this blogpost presents a dataset comprising publicly available invoice data for hybrid open access articles from Elsevier, a major publisher of scholarly journals. This dataset brings together metadata from Crossref and information retrieved from open access full-texts. The methods used to obtain the data not only address key challenges to discover hybrid open access articles along with funding and affiliation information using open data and tools. Elsevier's effort to make invoice recipients openly available also serves as a good practice example for other publishers offering hybrid open access options and central agreements. 
+At the SUB Göttingen, the Scholarly Communication Analytics team will address this intransparent situation in a [new project](https://gepris.dfg.de/gepris/projekt/416115939) funded by the Deutsche Forschungsgemeinschaft (DFG) in its programme "Open Access Transition Agreements"[@holzer]. Building on our pilot, the interactive [Shiny](https://shiny.rstudio.com/) app [Hybrid OA Journal Monitor](https://subugoe.shinyapps.io/hybridoa/), this project will investigate data needs from German library consortia and how they can be addressed by metadata requirements in transformative agreements. Case-studies and data products will be developed to monitor levels of compliance with policy recommendations. Here, invoice data are essential to make the various funding streams for hybrid open access articles visible. 
 
-To demonstrate the potential of publisher-provided data for the monitoring of the transition of journals to open access, the dataset will be used to analyse the number and the proportion of hybrid open access articles in Elsevier journals. Drawing on Elsevier's funding information, I will also investigate whether Elsevier sent invoices to authors or to funders that made an [agreement with Elsevier](https://www.elsevier.com/about/open-science/open-access/agreements), or if the fees were waived. Moreover, text-mined author email domains will provide a rough approximation of the affiliation of the first resp. corresponding author, an important data point for delineating open access funding.
+Against this background, this blogpost presents a dataset comprising publicly available invoice data for hybrid open access articles from Elsevier, a major publisher of scholarly journals. This dataset brings together metadata from Crossref and information retrieved from open access full-texts. The methods used to obtain the data not only address key challenges to discover hybrid open access articles along with funding and affiliation information using open data and tools. Elsevier's effort to share invoice recipients also serves as a good practice example for other publishers offering hybrid open access options and central agreements. It is also relevant for workflow recommendations [@Geschuhn_2017].
 
-The resulting dataset is openly available on GitHub along with the source code.
+To demonstrate the potential of publisher-provided data for the monitoring of the transition of journals to open access, the dataset will be used to analyse the number and the proportion of hybrid open access articles in Elsevier journals. Drawing on Elsevier's funding information, I will also investigate whether Elsevier sent invoices to authors or to funders that made an [agreement with Elsevier](https://www.elsevier.com/about/open-science/open-access/agreements), or if the fees were waived. Moreover, text-mined author email domains will provide a rough approximation of the affiliation of the first resp. corresponding author, an important data point for delineating open access funding. Finally, the publisher-provided invoice data will be compared with crowd-sourced spending data from the Open APC Initiative.
+
+To invite discussion about Elsevier's approach and its potential for monitoring transformative agreements, I made the resulting dataset openly available on GitHub along with the source code used to obtain the data.
 
 <!--## Local background
 
@@ -55,7 +57,7 @@ This project will inform metadata guidelines around transformative agreements. B
 
 ## Methods
 
-As a start, I used the [Elsevier publication fee price list](https://www.elsevier.com/__data/promis_misc/j.custom97.pdf), an openly available pdf document, to determine the current hybrid open access journals in Elsevier's journal portfolio. The rOpenSci [tabulizer](https://github.com/ropensci/tabulizer) package [@tabulizer] allowed to extract data about these journals from this file. 
+As a start, I used the [Elsevier publication fee price list](https://www.elsevier.com/__data/promis_misc/j.custom97.pdf), an openly available pdf document, to determine current hybrid open access journals in Elsevier's journal portfolio. The rOpenSci [tabulizer](https://github.com/ropensci/tabulizer) package [@tabulizer] allowed to extract data about these journals from this file. 
 
 <aside>
   See [fetch_apc_list.R](https://github.com/njahn82/elsevier_hybrid_volume/blob/master/R/fetch_apc_list.R) how to obtain journal data 
@@ -98,7 +100,7 @@ Moreover, I parsed the first author email address, assuming that email domains r
   See [R/extract_email_domains.R](https://github.com/njahn82/elsevier_hybrid_volume/blob/master/R/extract_email_domains.R)
 </aside>
 
-Finally, to measure the overlap between crowd-sourced and publisher-provided invoice data, I downloaded spending data from the Open APC initiative [@openapc], which is, to my knowledge, the largest evidence-base for institutional spending on open access publication fees.
+Finally, to measure the overlap between crowd-sourced and publisher-provided invoice data, I downloaded spending data from the Open APC Initiative [@openapc], which is, to my knowledge, the largest evidence-base for institutional spending on open access publication fees.
 
 ## Dataset characteristics
 
@@ -194,9 +196,9 @@ left_align(a_plot, c("subtitle", "title", "caption")) %>%
 
 ### How many hybrid open access articles were facilitated by central agreements with Elsevier?
 
-In most cases, Elsevier sent invoices for hybrid open access publication fees to individual authors (`r round(hybrid_df %>% filter(oa_sponsor_type == "Author") %>% nrow() / nrow(hybrid_df) * 100, 2)` %). For around `r round(hybrid_df %>% filter(oa_sponsor_type == "FundingBody") %>% nrow() / nrow(hybrid_df) * 100, 2)` % of articles, the publisher charged funders and research orgnaisations with an central invoicing agreement directly. Elsevier granted publication fee waivers to `r round(hybrid_df %>% filter(oa_sponsor_type == "ElsevierWaived") %>% nrow() / nrow(hybrid_df) * 100, 2)` % of hybrid open access articles.
+In most cases, Elsevier sent invoices for hybrid open access publication fees to individual authors (`r round(hybrid_df %>% filter(oa_sponsor_type == "Author") %>% nrow() / nrow(hybrid_df) * 100, 2)` %). For around `r round(hybrid_df %>% filter(oa_sponsor_type == "FundingBody") %>% nrow() / nrow(hybrid_df) * 100, 2)` % of articles, the publisher directly charged funders and research organisations with an central invoicing agreement. Elsevier granted publication fee waivers to `r round(hybrid_df %>% filter(oa_sponsor_type == "ElsevierWaived") %>% nrow() / nrow(hybrid_df) * 100, 2)` % of hybrid open access articles.
 
-Figure \@ref(fig:invoiceoverview) shows the annual development per invocing type. Inspired by Claus O. Wilke’s "Fundamentals of Data Visualization" [@wilke], each type is visualised separately as parts of the total. The figure reveals a general growth of hybrid open access articles. It illustrate that this development was mainly driven by individual options to pay for hybrid open access publication fees, while central invoicing stagnated. Also the amount of fee-waived articles remained more or less constant during 2015 and now.
+Figure \@ref(fig:invoiceoverview) shows the annual development per invocing type. Inspired by Claus O. Wilke’s "Fundamentals of Data Visualization" [@wilke], each type is visualised separately as parts of the total. The figure reveals a general growth of hybrid open access articles. It illustrates that this development was mainly driven by individual options to pay for hybrid open access publication fees, while central invoicing stagnated. Also the amount of fee-waived articles remained more or less constant during 2015 and now.
 
 ```{r invoiceoverview, fig.cap="Development of fee-based hybrid open access publishing in Elsevier journals by invoicing type. Colored bars represent the invoice recipient, or if the fee was waived. Grey bars show the total number of hybrid open access articles published by Elsevier journals between 2015 and now. Data Source: Elsevier B.V / Crossref."}
 sponsored_articles <- hybrid_df %>%
@@ -251,11 +253,11 @@ hybrid_df %>%
     e_title("Elsevier Hybrid Open Access: Invoice Recipients")
 ```
 
-Clicking on "Agreement" shows the funders and research organisations that covered hybrid open access publication fees as part of an central agreement. In total, Elsevier disclosed `r hybrid_df %>% distinct(oa_sponsor_name) %>% filter(!is.na(oa_sponsor_name)) %>% nrow()` different institutions that received an invoice for open access publication. Not surprinsingly, mostly British and Dutch funders or consortia paid for hybrid open access in Elsevier journals. But also the German Federal Ministry of Education and Research (BMBF) is well represented despite the current boycott from most universities and research organizations in Germany [@Else_2018]. In fact, the BMBF is not part of the [Alliance of Science Organisations in Germany](https://www.dfg.de/en/dfg_profile/alliance/index.html), whose members decided to cancel Elsevier subscriptions in 2017. Since then, the BMBF has financially supported `r hybrid_df %>% filter(grepl("BMBF", oa_sponsor_name)) %>% nrow()` hybrid open access articles that appeared in `r hybrid_df %>% filter(grepl("BMBF", oa_sponsor_name)) %>% distinct(issn) %>% nrow()` Elsevier journals according to the publisher.
+Clicking on "Agreement" shows the funders and research organisations that covered hybrid open access publication fees as part of an central agreement. In total, Elsevier disclosed `r hybrid_df %>% distinct(oa_sponsor_name) %>% filter(!is.na(oa_sponsor_name)) %>% nrow()` different institutions that received an invoice for open access publication. Not surprinsingly, mostly British and Dutch funders or consortia paid for hybrid open access in Elsevier journals. But also the German Federal Ministry of Education and Research (BMBF) is well represented despite the current boycott from most universities and research organizations in Germany [@Else_2018]. In fact, the BMBF is not part of the [Alliance of Science Organisations in Germany](https://www.dfg.de/en/dfg_profile/alliance/index.html), whose members decided to cancel Elsevier subscriptions in 2017. Since 2018, the BMBF has financially supported `r hybrid_df %>% filter(grepl("BMBF", oa_sponsor_name)) %>% nrow()` hybrid open access articles that appeared in `r hybrid_df %>% filter(grepl("BMBF", oa_sponsor_name)) %>% distinct(issn) %>% nrow()` Elsevier journals according to the publisher.
 
 ### Who published hybrid open access in Elsevier journals?
 
-In addition to funding information, email domains were parsed from Elsevier full-texts. These domains roughly indicate the affiliation of the first or of the corresponding authors, respectively, a data point used to delineate open access funding. 
+In addition to funding information, email domains were parsed from Elsevier full-texts. These domains roughly indicate the affiliation of the first or of the corresponding authors, respectively, a data point used to delineate open access funding [@Geschuhn_2017]. 
 
 ```{r emaildomain, fig.cap="Email domain analysis of first resp. corresponding authors publishing hybrid open access in Elsevier journals. Around every fourth article published between 2015 and now was from an author affiliated with an UK-based academic institution. Data Source: Elsevier B.V."}
 email_df <- hybrid_df %>%
@@ -283,7 +285,7 @@ ggplot(email_df, aes(suffix, prop)) +
 
 Figure \@ref(fig:emaildomain) presents a breakdown by email domain suffix. In total, `r hybrid_df %>% filter(!is.na(suffix)) %>% nrow()` email addresses were retrieved and parsed from Elsevier full-texts, corresponding to an share of `r round(hybrid_df %>% filter(!is.na(suffix)) %>% nrow() / nrow(hybrid_df) * 100, 2)` %. Most corresponding author emails originate from academic institutions in the UK ("ac.uk"), reflecting the country's leading role in supporting hybrid open access publications [@Pinfield_2015]. They are followed by domains from commercial organisations ("com"), and US-American institutions of higher education ("edu"). The figure illustrates that European institutions from  Germany ("de"), the Netherlands ("nl"), and Sweden ("se") were well represented. In total, `r hybrid_df %>% filter(!is.na(suffix)) %>% distinct(suffix) %>% nrow()`  domain suffixes were retrieved.
 
-In the following, a hierarchical, interactive treemap visualizes the distribution of the email domains (see Figure \@ref(fig:emailsub)). It appears that the distribution of email domains roughly represent the national research landscapes. However, the dominance of domains from commercial organizations, mostly email providers like "gmail.com" or the Chinese "163.com" and "126.com" highlights the limitations of this approach to infer eligble funding institutions from author email adresses.
+In the following, a hierarchical, interactive treemap visualises the distribution of the email domains (see Figure \@ref(fig:emailsub)). It appears that it roughly represents the national research landscapes. However, the dominance of domains from commercial organizations, mostly email providers like "gmail.com" or the Chinese "163.com" and "126.com" highlights the limitations of this approach to infer eligble funding institutions from author email adresses.
 
 
 ```{r emailsub, fig.cap="Email domain analysis of first resp. corresponding authors publishing hybrid open access in Elsevier journals. Each top-level domain can be subdivided further into domain names representing academic institutions or companies. Data Source: Elsevier B.V."}
@@ -301,7 +303,7 @@ hybrid_df %>%
 
 ```
 
-### How does Elsevier invoice data compare to spending information from the Open APC initiative?
+### How does Elsevier invoice data compare to spending information from the Open APC Initiative?
 
 
 ```{r, cache=TRUE}
@@ -311,7 +313,7 @@ u <-
 o_apc <- readr::read_csv(u)
 #'
 #' We also would like to add data from transformative aggrements, which is also
-#' collected by the Open APC initiative.
+#' collected by the Open APC Initiative.
 #' The transformative agreements data-set does not include pricing information.
 #'
 oa_trans <-
@@ -333,11 +335,11 @@ elsevier_miss <- oapc %>%
   filter(period > 2015)
 ```
 
-Finally, I was interested in the overlap between publisher-provided invoice data from Elsevier and institunal spending for hybrid open access publications disclosed by the Open APC initiative. In total, `r hybrid_tmp %>% filter(in_openapc == TRUE) %>% nrow()` out of `r nrow(hybrid_tmp)` hybrid open access articles were also tracked by the Open APC initiative, corresponding to an share of `r round(hybrid_tmp %>% filter(in_openapc == TRUE) %>% nrow() /  nrow(hybrid_tmp) * 100, 2)` %. However, the Open APC initiative listed another `r nrow(elsevier_miss)` hybrid open access articles, presumably because they did not meet my metadata requirements, or appeared in journals that transitioned from hybrid to fully open access recently (e.g. the journal NeuroImage). At the journal level, the overlap was `r round(hybrid_tmp %>% filter(in_openapc == TRUE) %>% distinct(issn) %>% nrow() / length(unique(hybrid_tmp$issn)) * 100, 2)` %.
+Finally, I was interested in the overlap between publisher-provided invoice data from Elsevier and institutional spending data from the Open APC Initiative. In total, the Open APC Initiative tracked `r hybrid_tmp %>% filter(in_openapc == TRUE) %>% nrow()` out of `r nrow(hybrid_tmp)` hybrid open access articles, corresponding to an share of `r round(hybrid_tmp %>% filter(in_openapc == TRUE) %>% nrow() /  nrow(hybrid_tmp) * 100, 2)` %. Institutional expenditures for these hybrid open access articles amounted to `r oapc %>% filter(tolower(doi) %in% tolower(hybrid_df$doi)) %>% .$euro %>% sum(na.rm = TRUE)` € according to Open APC data. However, the Open APC Initiative listed another `r nrow(elsevier_miss)` hybrid open access articles, presumably because they did not meet my metadata requirements, or appeared in journals that transitioned from hybrid to fully open access recently (e.g. the journal "NeuroImage"). At the journal level, the overlap was `r round(hybrid_tmp %>% filter(in_openapc == TRUE) %>% distinct(issn) %>% nrow() / length(unique(hybrid_tmp$issn)) * 100, 2)` %.
 
-Figure \@ref(fig:openapcoverview)  presents the annual development of spending disclosure for Elsevier hybrid open access articles to the Open APC initiative grouped by invoincing type. The Open APC initiative mostly tracked articles from central invoicing agreements. The figure also suggests that invoices that were sent to authors were covered by institutions participating in Open APC. Generally, results confirms a delay between invoicing an reporting to the Open APC initiative [@Jahn_2016]. Surprisingly, Open APC listed institutional payments for `r hybrid_tmp %>% filter(oa_sponsor_type == "ElsevierWaived", in_openapc == TRUE) %>% nrow()` articles, where Elsevier reported that the fee was waived.
+Figure \@ref(fig:openapcoverview)  presents the annual development of spending disclosure for Elsevier hybrid open access articles to the Open APC Initiative grouped by invoincing type. The Open APC Initiative mostly tracked articles from central invoicing agreements. The figure also suggests that invoices that were sent to authors were covered by institutions participating in Open APC. Generally, results confirms a delay between invoicing an reporting to the Open APC Initiative [@Jahn_2016]. Surprisingly, Open APC listed institutional payments for `r hybrid_tmp %>% filter(oa_sponsor_type == "ElsevierWaived", in_openapc == TRUE) %>% nrow()` articles, where Elsevier reported that the fee was waived.
 
-```{r openapcoverview, fig.cap="Development of fee-based hybrid open access publishing in Elsevier journals by invoicing type and disclosure of institutional payment by the Open APC initiative. Colored bars represent the number of articles that are also tracked in Open APC. Grey bars show the total number of hybrid open access articles published by invoicing type between 2015 and now. Data Sources: Crossref, Elsevier B.V., Open APC Initiative."}
+```{r openapcoverview, fig.cap="Development of fee-based hybrid open access publishing in Elsevier journals by invoicing type and disclosure of institutional payment by the Open APC Initiative. Colored bars represent the number of articles that are also tracked in Open APC. Grey bars show the total number of hybrid open access articles published by invoicing type between 2015 and now. Data Sources: Crossref, Elsevier B.V., Open APC Initiative."}
 hybrid_tmp %>%
   filter(oa_sponsor_type %in% c("Author", "FundingBody")) %>%
   mutate(oa_sponsor_type = recode(oa_sponsor_type, 
@@ -349,9 +351,9 @@ hybrid_tmp %>%
   ggplot(aes(gsub("20", "", issued_year), n, fill = in_openapc)) +
   geom_bar(stat = "identity") +
   facet_wrap(~fct_source) +
-  scale_fill_manual("Elsevier Hybrid Open Access Articles",
+  scale_fill_manual("",
                     values = c("#b3b3b3a0", "#56B4E9"), 
-                    labels = c("All", "in Open APC")) +
+                    labels = c("Elsevier Hybrid OA Articles", "in Open APC")) +
   labs(x = NULL, y = NULL) + 
        #title = "Elsevier Hybrid Open Access:\nTo whom did the publisher send the bill?",
       # caption = "Data source: Elsevier B.V. / Crossref") +
@@ -364,8 +366,9 @@ hybrid_tmp %>%
   theme(legend.position="top", legend.justification = "right")
 ```
 
+The last figure presents an gap analysis between publisher-provided invoice data and Open APC for the ten most important funding bodies  measured by the number of hybrid open access articles. Figure \@ref(fig:overlap) highlights that British funders had the largest overlap rates, reflecting Open APC efforts to re-use openly available spending data from these institutions [@Pieper_2018]. On the other hand, Open APC did not track Dutch ("VSNU"), US-American ("Melinda & Bill Gates Foundation") and European funding activities ("European Research Council") for hybrid open access publication fees. 
 
-```{r}
+```{r overlap, width = 9, fig.cap="Proportion of fee-based hybrid open access articles from Elsevier disclosed by the Open APC Initiative. Blue areas represent joint spending data, grey areas centrally paid articles, which were not present in the Open APC data. Data Source: Crossref, Elsevier B.V., Open APC Initiative."}
 hybrid_tmp %>% 
  # filter(oa_sponsor_type %in% c("Author", "FundingBody")) %>%
   filter(!is.na(oa_sponsor_name)) %>% 
@@ -376,18 +379,17 @@ hybrid_tmp %>%
   ggplot(aes(fct_rev(fct_funder), n, fill = in_openapc)) +
   geom_bar(stat = "identity") +
   scale_fill_manual("", 
-                    values = c("#b3b3b3a0", "#56B4E9"), labels = c("All", "in Open APC")) +
+                    values = c("#b3b3b3a0", "#56B4E9"), labels = c(" Elsevier Hybrid OA Articles", "in Open APC")) +
   scale_y_continuous(labels = scales::number_format(big.mark = " ")) +
   coord_flip() +
   labs(x = NULL, y = NULL) +
-  theme_minimal(base_family="Roboto", base_size = 12) +
+  theme_minimal(base_family="Roboto", base_size = 11) +
   theme(panel.grid.minor=element_blank()) +
   theme(axis.ticks=element_blank()) +
   theme(panel.grid.major.y=element_blank()) +
   theme(panel.border=element_blank()) +
   theme(legend.position="top", legend.justification = "right")
 ```
-
 
 
 ## Discussion and conclusion
