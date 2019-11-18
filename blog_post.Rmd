@@ -1,5 +1,5 @@
 ---
-title: "Elsevier invoice data"
+title: "Elsevier invoice data about hybrid open access articles"
 description: Publishers rarely make spending for hybrid open access articles transparent. Elsevier is an remarkable exception, because the publisher provides open and machine-readable data about central agreements with funding bodies and fee waivers at the article level. This blogpost demonstrates how to mine these invoice data from Elsevier full-texts with R. Analysing the resulting dataset of  70,657 hybrid open access articles published in 1,753 journals between 2015 and now reveals that around one third of publication fees were paid through central agreements. Nevertheless, the majority of funding sources for hybrid open access articles remains unknown.
 date: Nov 25, 2019
 author:
