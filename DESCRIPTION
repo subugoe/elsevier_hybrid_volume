@@ -31,6 +31,6 @@ Depends:
     urltools,
     xml2
 Remotes: 
-    JohnCoene/echarts4r
+    hrbrmstr/ggeconodist
 Encoding: UTF-8
 LazyData: true

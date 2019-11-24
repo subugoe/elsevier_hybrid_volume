@@ -13,7 +13,7 @@ To start with, read the blog post:
 
 ### File organisation
 
-The R files in the [`analysis/`](analysis/) directory provide details about the data analysis, particularly about how Crossref services were interfaced, and the [*blog post*](analysis/paper.md). The [`data/`](data/) directory contains all aggregated data. The main file you want to start your analyis is `data/elsevier_hybrid_oa_df.csv`.
+The R files in the [`analysis/`](analysis/) directory provide details about the data analysis, particularly about how the Crossref services were interfaced, and the [*blog post*](analysis/blog_post.Rmd). The [`data/`](data/) directory contains all aggregated data. The main file you want to start your analysis with is `data/elsevier_hybrid_oa_df.csv`.
 
 Overview:
 
@@ -59,9 +59,21 @@ This data analytics works has been developed using open tools. There are a numbe
 
 - If you don’t understand something, please let me know and [submit an issue](https://github.com/subugoe/oa2020cadata).
 
-Feel free to add new features or fix bugs by sending a pull request.
+- Feel free to add new features or fix bugs by sending a pull request.
 
-Please note that this project is released with a   [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+
+### License
+
+Re-used data terms:
+
+Crossref asserts no claims of ownership to individual items of bibliographic metadata and associated Digital Object Identifiers (DOIs) acquired through the use of the Crossref Free Services. Individual items of bibliographic metadata and associated DOIs may be cached and incorporated into the user's content and systems.
+
+The compiled data are made available under the Public Domain Dedication and License v1.0 whose full text can be found at: <http://www.opendatacommons.org/licenses/pddl/1.0/>
+
+The blog post including the figures are made available under CC-BY 4.0.
+
+Source Code: MIT (Najko Jahn, 2019)
 
 ### Contact
 
