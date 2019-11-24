@@ -2,3 +2,36 @@
 
 language: R
 cache: packages
+
+matrix:
+  include:
+    - dist: trusty
+    - dist: xenial
+    - dist: xenial
+      addons:
+        apt:
+          sources:
+            - sourceline: 'ppa:cran/poppler'
+          packages:
+            - libwebp-dev
+            - libpoppler-cpp-dev
+            - poppler-data
+            - libtesseract-dev
+            - libleptonica-dev
+            - tesseract-ocr-eng
+    - os: osx
+      brew_packages: poppler
+    - os: osx
+      osx_image: xcode7.3
+      disable_homebrew: true
+      before_install: sed -i.bak 's/-isysroot /-I/g' $(R RHOME)/etc/Makeconf
+
+addons:
+  apt:
+    packages:
+      - libwebp-dev
+      - libpoppler-cpp-dev
+      - poppler-data
+      - libtesseract-dev
+      - libleptonica-dev
+      - tesseract-ocr-eng
