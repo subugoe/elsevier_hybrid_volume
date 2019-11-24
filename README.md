@@ -17,7 +17,7 @@ The R files in the [`analysis/`](analysis/) directory provide details about the 
 
 Overview:
 
-```
+```console
 .
 ├── .binder
 │   └── Dockerfile #  Docker environment
