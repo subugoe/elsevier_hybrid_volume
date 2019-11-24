@@ -1,0 +1,36 @@
+Type: Compendium
+Package: elsevierinvoicingdata
+Title: Mining and analysing invoice data from Elsevier relative to hybrid open access
+Version: 0.0.1
+Authors@R: 
+    person(given = "Najko",
+           family = "Jahn",
+           role = c("aut", "cre"),
+           email = "najko.jahn@googlemail.com",
+           comment = c(ORCID = "0000-0001-5105-1463"))
+Description: This repository contains invoice data from Elsevier hybrid journals from 2015 to mid November 2019 along with the analytical code
+License: MIT + file LICENSE
+Depends: 
+    crminer,
+    distill,
+    dplyr,
+    echarts4r,
+    ggeconodist,
+    jsonlite,
+    knitr,
+    lubridate,
+    purrr,
+    rcrossref,
+    readr,
+    rmarkdown,
+    scales,
+    tabulizer,
+    tibble,
+    tidyr,
+    tidyverse,
+    urltools,
+    xml2
+Remotes: 
+    JohnCoene/echarts4r
+Encoding: UTF-8
+LazyData: true
