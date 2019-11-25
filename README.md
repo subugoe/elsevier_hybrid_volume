@@ -2,9 +2,8 @@
 
 <!-- badges: start -->
   [![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/njahn82/elsevier_hybrid_volume/master?urlpath=rstudio)
-
   [![Build Status](https://travis-ci.org/njahn82/elsevier_hybrid_volume.svg?branch=master)](https://travis-ci.org/njahn82/elsevier_hybrid_volume)
-  
+
   <!-- badges: end -->
 
 ### Overview
@@ -13,10 +12,13 @@ This repository contains invoice data from Elsevier hybrid journals from 2015 to
 
 To start with, read the blog post:
 
+<https://subugoe.github.io/scholcomm_analytics/posts/elsevier_invoice/>
 
 ### File organisation
 
-The R files in the [`analysis/`](analysis/) directory provide details about the data analysis, particularly about how the Crossref services were interfaced, and the [*blog post*](analysis/blog_post.Rmd). The [`data/`](data/) directory contains all aggregated data. The main file you want to start your analysis with is `data/elsevier_hybrid_oa_df.csv`.
+The R files in the [`analysis/`](analysis/) directory provide details about the data analysis, particularly about how the Crossref services were interfaced, and [**blog post**](analysis/blog_post.Rmd) written in R Markdown. 
+
+The [`data/`](data/) directory contains all aggregated data. The main file you want to start your analysis with is `data/elsevier_hybrid_oa_df.csv`.
 
 Overview:
 
