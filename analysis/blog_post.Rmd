@@ -131,8 +131,8 @@ It should be noted, however, that Elsevier did not provide an official documenta
 library(tidyverse)
 library(jsonlite)
 library(ggeconodist)
-hybrid_df <- readr::read_csv("data/elsevier_hybrid_oa_df.csv")
-cr_facets <- jsonlite::stream_in(file("data/journal_facets.json"), verbose = FALSE)
+hybrid_df <- readr::read_csv("../data/elsevier_hybrid_oa_df.csv")
+cr_facets <- jsonlite::stream_in(file("../data/journal_facets.json"), verbose = FALSE)
 ```
 
 In total, `r length(unique(hybrid_df$issn))` out of `r length(unique(cr_facets$journal_title))` hybrid journals published at least one open access article from 2015 to date, corresponding to about `r round(length(unique(hybrid_df$issn)) / length(unique(cr_facets$journal_title)) * 100, 2)`% of journal titles in Elsevier's hybrid journal portfolio. In these journals, `r nrow(hybrid_df)` articles were published open access. The total share of hybrid open access in the publication volume of Elsevier journals was `r round(nrow(hybrid_df) / cr_facets %>% unnest(year_published) %>% filter(.id > 2014) %>% .$V1 %>% sum() * 100, 2)`%.
@@ -229,7 +229,7 @@ ggplot(sponsored_articles, aes(x = gsub("20", "", issued_year), y = n)) +
 ```
 
 
-The following interactive visualisation (Figure \@ref(fig:treefunder)), created with the [echarts4r](https://echarts4r.john-coene.com/) package[@echarts], lets you browse the invoicing data.
+The following interactive visualisation (Figure \@ref(fig:treefunder)), created with the [echarts4r](https://echarts4r.john-coene.com/) package[@echarts], lets you browse the invoicing data. I recommend using a recent Chrome browser ot interact with the visualisation.
 
 ```{r treefunder, fig.cap="Breakdown of Elsevier hybrid open access journal articles by invoice recipient. Each rectangle represents an invoicing type and can be broken down by recipient. Data Source: Elsevier B.V."}
 library(echarts4r)
@@ -241,10 +241,12 @@ hybrid_df %>%
   count(oa_sponsor_name, oa_sponsor_type) %>%
     e_charts() %>%
     e_treemap(oa_sponsor_type, oa_sponsor_name, n, leafDepth = "1",
-              name = "APC Source") %>%
+              name = "APC Source", roam = "false") %>%
     e_tooltip(trigger = "item") %>%
     e_title("Elsevier Hybrid Open Access: Invoice Recipients")
 ```
+
+<aside>I recommend using a recent Chrome browser to interact with the visualisation.</aside>
 
 Clicking on "Agreement" shows the funders or research organisations that paid for open access publication fees as part of a central or transformative agreement. In total, Elsevier disclosed `r hybrid_df %>% distinct(oa_sponsor_name) %>% filter(!is.na(oa_sponsor_name)) %>% nrow()` different institutions that received an invoice for open access publication. Not surprisingly, mostly British and Dutch funders or consortia paid for hybrid open access in Elsevier hybrid journals. The German Federal Ministry of Education and Research (BMBF) is, however, also represented despite the current boycott from most universities and research organisations in Germany [@Else_2018]. In fact, the BMBF is not part of the [Alliance of Science Organisations in Germany](https://www.dfg.de/en/dfg_profile/alliance/index.html), whose members want to negotiate a transformative agreement with Elsevier [@Mittermaier]. Since 2018, the BMBF has financially supported `r hybrid_df %>% filter(grepl("BMBF", oa_sponsor_name)) %>% nrow()` open access articles that appeared in `r hybrid_df %>% filter(grepl("BMBF", oa_sponsor_name)) %>% distinct(issn) %>% nrow()` Elsevier hybrid journals according to data from the publisher.
 
@@ -280,7 +282,6 @@ Figure \@ref(fig:emaildomain) presents a breakdown by email domain suffix. In to
 
 In the following figure, a hierarchical, interactive treemap visualises the distribution of the email domains (see Figure \@ref(fig:emailsub)). It appears that this distribution roughly represents the overall national research landscapes measured by publication output. However, the dominance of domains from commercial organisations, mostly email providers like "gmail.com" or the Chinese "163.com" and "126.com", highlights the limitations of this approach to infer eligible funding institutions with  author email addresses.
 
-
 ```{r emailsub, fig.cap="Email domain analysis of first corresponding authors publishing open access in Elsevier hybrid journals. Each top-level domain can be subdivided further into domain names representing academic institutions or companies. Data Source: Elsevier B.V."}
 library(echarts4r)
 hybrid_df %>% 
@@ -288,12 +289,13 @@ hybrid_df %>%
   replace_na(list(suffix = "unknown", domain = "unknown")) %>%
   count(suffix, domain) %>%
     e_charts() %>%
-    e_treemap(suffix, domain, n, leafDepth = "1",
+    e_treemap(suffix, domain, n, leafDepth = "1", roam = "false",
               name = "Email Domain") %>%
     e_tooltip(trigger = "item") %>%
     e_title("Email Domains First Corresponding Author")
-
 ```
+
+<aside>I recommend using a recent Chrome browser to interact with the visualisation.</aside>
 
 ### How does Elsevier invoice data compare to spending information from the Open APC Initiative?
 

@@ -2,6 +2,9 @@
 
 <!-- badges: start -->
   [![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/njahn82/elsevier_hybrid_volume/master?urlpath=rstudio)
+
+  [![Build Status](https://travis-ci.org/njahn82/elsevier_hybrid_volume.svg?branch=master)](https://travis-ci.org/njahn82/elsevier_hybrid_volume)
+  
   <!-- badges: end -->
 
 ### Overview
