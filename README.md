@@ -1,8 +1,8 @@
 ## Research compendium: Mining and analysing invoice data from Elsevier relative to hybrid open access
 
 <!-- badges: start -->
-  [![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/njahn82/elsevier_hybrid_volume/master?urlpath=rstudio)
-  [![Build Status](https://travis-ci.org/njahn82/elsevier_hybrid_volume.svg?branch=master)](https://travis-ci.org/njahn82/elsevier_hybrid_volume)
+  [![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/subugoe/elsevier_hybrid_volume/master?urlpath=rstudio)
+  [![Build Status](https://travis-ci.org/subugoe/elsevier_hybrid_volume.svg?branch=master)](https://travis-ci.org/subugoe/elsevier_hybrid_volume)
 
   <!-- badges: end -->
 
