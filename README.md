@@ -16,9 +16,9 @@ To start with, read the blog post:
 
 ### File organisation
 
-The R files in the [`analysis/`](analysis/) directory provide details about the data analysis, particularly about how the Crossref services were interfaced, and [**blog post**](analysis/blog_post.Rmd) written in R Markdown. 
+The R files in the [`analysis/`](analysis/) directory comprises scripts used for the data analysis, particularly about how the Crossref services were interfaced, and the [blog post](analysis/blog_post.Rmd) written in R Markdown. 
 
-The [`data/`](data/) directory contains all aggregated data. The main file you want to start your analysis with is `data/elsevier_hybrid_oa_df.csv`.
+The [`data/`](data/) directory contains all aggregated data. The main file used in the blog post is [`data/elsevier_hybrid_oa_df.csv`](data/elsevier_hybrid_oa_df.csv).
 
 Overview:
 
